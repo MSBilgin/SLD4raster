@@ -9,11 +9,13 @@ mselimbilgin [at] yahoo.com
 http://cbsuygulama.wordpress.com
 
 
-##Description
+
+###Description
 SLD4raster is a QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. It supports multiband, singleband pseudocolor, gradient styles. By using it you can share your raster map styles in QGIS with other GIS softwares that support OGC SLD standarts. For example Udig, GeoServer, MapServer…
 
 
-##Features
+
+###Features
    
    - Multiband color styles. You can use different band orders (4,3,2 or 1,2,3 etc.)
 
