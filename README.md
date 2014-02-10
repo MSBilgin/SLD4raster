@@ -24,4 +24,8 @@ SLD4raster is a QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for rast
    - Gradient color (white to black, black to white) styles. Also you can adjust min-max values.
 
    - Supports layer opacity.
-   - 
+   
+
+<p align="center">
+  <img src="https://lh6.googleusercontent.com/-cYIiu0gPIkU/UvFmu9A5mEI/AAAAAAAAAQU/yOguDncemRU/w294-h552-no/1.png"/>
+</p>
