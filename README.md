@@ -29,3 +29,10 @@ SLD4raster is a QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for rast
 <p align="center">
   <img src="https://lh6.googleusercontent.com/-eeINOQDV-ac/UvlIMctOGYI/AAAAAAAAARQ/7jWAAp4jtWA/w577-h540-no/image001.png"/>
 </p>
+
+
+###Installation
+
+1. Donwload the project and unzip it. 
+2. Change the plugin folder name to SLD4raster. 
+3. Copy this folder to .qgis2\python\plugins\  
