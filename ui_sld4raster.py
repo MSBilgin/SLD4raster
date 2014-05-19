@@ -114,7 +114,7 @@ class Ui_sld4raster(object):
         self.saveBtn.setText(_translate("sld4raster", "Save file...", None))
         self.validateBtn.setText(_translate("sld4raster", "Validate ", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("sld4raster", "Generate SLD Document", None))
-        self.translateBtn.setText(_translate("sld4raster", "Translate to QGS file...", None))
+        self.translateBtn.setText(_translate("sld4raster", "Transform to QGS file...", None))
         self.browseBtn.setText(_translate("sld4raster", "Browse...", None))
         self.label_2.setText(_translate("sld4raster", "Input SLD File", None))
         self.validateBtn_2.setText(_translate("sld4raster", "Validate ", None))
