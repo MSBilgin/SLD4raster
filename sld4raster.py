@@ -92,78 +92,82 @@ class sld4raster:
 		
 			
 	def sldTransform(self):
-		sldDocument = minidom.parseString(self.dlg.textEdit_2.toPlainText().encode('utf-8'))
-		#main QML structure.
-		qmlRoot = Element('qgis')
-		pipe = SubElement(qmlRoot, 'pipe')
+		try:
+			sldDocument = minidom.parseString(self.dlg.textEdit_2.toPlainText().encode('utf-8'))
+			#main QML structure.
+			qmlRoot = Element('qgis')
+			pipe = SubElement(qmlRoot, 'pipe')
 		
-		rasterRenderer = SubElement(pipe, 'rasterrenderer')
-		rasterTransparency = SubElement(rasterRenderer,'rasterTransparency')
+			rasterRenderer = SubElement(pipe, 'rasterrenderer')
+			rasterTransparency = SubElement(rasterRenderer,'rasterTransparency')
 		
-		#checking document for containing ColorMap tag. If does, it is a single-band raster.
-		sldRasterType = sldDocument.getElementsByTagName('sld:ColorMap') 
-		if len(sldRasterType) == 0 :
-			sldRedBand = sldDocument.getElementsByTagName('sld:RedChannel')[0].getElementsByTagName('sld:SourceChannelName')[0].firstChild.nodeValue
-			sldGreenBand = sldDocument.getElementsByTagName('sld:GreenChannel')[0].getElementsByTagName('sld:SourceChannelName')[0].firstChild.nodeValue
-			sldBlueBand = sldDocument.getElementsByTagName('sld:BlueChannel')[0].getElementsByTagName('sld:SourceChannelName')[0].firstChild.nodeValue
+			#checking document for containing ColorMap tag. If does, it is a single-band raster.
+			sldRasterType = sldDocument.getElementsByTagName('sld:ColorMap') 
+			if len(sldRasterType) == 0 :
+				sldRedBand = sldDocument.getElementsByTagName('sld:RedChannel')[0].getElementsByTagName('sld:SourceChannelName')[0].firstChild.nodeValue
+				sldGreenBand = sldDocument.getElementsByTagName('sld:GreenChannel')[0].getElementsByTagName('sld:SourceChannelName')[0].firstChild.nodeValue
+				sldBlueBand = sldDocument.getElementsByTagName('sld:BlueChannel')[0].getElementsByTagName('sld:SourceChannelName')[0].firstChild.nodeValue
 						
-			rasterRenderer.attrib['type'] = 'multibandcolor'
-			rasterRenderer.attrib['redBand'] = sldRedBand
-			rasterRenderer.attrib['greenBand'] = sldGreenBand
-			rasterRenderer.attrib['blueBand'] = sldBlueBand
+				rasterRenderer.attrib['type'] = 'multibandcolor'
+				rasterRenderer.attrib['redBand'] = sldRedBand
+				rasterRenderer.attrib['greenBand'] = sldGreenBand
+				rasterRenderer.attrib['blueBand'] = sldBlueBand
 						
-		else:
-			rasterRenderer.attrib['type'] = 'singlebandpseudocolor'
-			rasterRenderer.attrib['band'] = '1'
-			rasterShader = SubElement(rasterRenderer, 'rastershader')
-			
-			colorRampShader = SubElement(rasterShader, 'colorrampshader')
-									
-			try:
-				sldColorMapType = sldDocument.getElementsByTagName('sld:ColorMap')[0].attributes.has_key('type') #sometimes "ColorMap" tag does not contain "type" attribute. This means it is a ramp color.
-				sldColorMapType2 = sldDocument.getElementsByTagName('sld:ColorMap')[0].attributes['type'].value #or getting raster map colortype by "type" atribute.
-			except:
-				pass
-				
-			if sldColorMapType and sldColorMapType2 == 'intervals':
-				colorRampShader.attrib['colorRampType'] = 'DISCRETE'
 			else:
-				colorRampShader.attrib['colorRampType'] = 'INTERPOLATED'
+				rasterRenderer.attrib['type'] = 'singlebandpseudocolor'
+				rasterRenderer.attrib['band'] = '1'
+				rasterShader = SubElement(rasterRenderer, 'rastershader')
 			
-			sldColorValues = list()
-			sldItemList = sldDocument.getElementsByTagName('sld:ColorMapEntry')
-			
-			#some SLD documents don't have 'label' attribute so the problem is handled by this way.
-			try:
-				for m in sldItemList:
-					sldColorValues.append([m.attributes['quantity'].value, m.attributes['label'].value, m.attributes['color'].value])
-			except:
-				for m in sldItemList:
-					sldColorValues.append([m.attributes['quantity'].value, m.attributes['quantity'].value, m.attributes['color'].value])
+				colorRampShader = SubElement(rasterShader, 'colorrampshader')
+									
+				try:
+					sldColorMapType = sldDocument.getElementsByTagName('sld:ColorMap')[0].attributes.has_key('type') #sometimes "ColorMap" tag does not contain "type" attribute. This means it is a ramp color.
+					sldColorMapType2 = sldDocument.getElementsByTagName('sld:ColorMap')[0].attributes['type'].value #or getting raster map colortype by "type" atribute.
+				except:
+					pass
 				
-			for s in range(len(sldColorValues)):
-				item = SubElement(colorRampShader, 'item')
-				item.attrib['alpha'] = '255'
-				item.attrib['value'] = sldColorValues[s][0]
-				item.attrib['label'] = sldColorValues[s][1]
-				item.attrib['color'] = sldColorValues[s][2]
+				if sldColorMapType and sldColorMapType2 == 'intervals':
+					colorRampShader.attrib['colorRampType'] = 'DISCRETE'
+				else:
+					colorRampShader.attrib['colorRampType'] = 'INTERPOLATED'
+			
+				sldColorValues = list()
+				sldItemList = sldDocument.getElementsByTagName('sld:ColorMapEntry')
+			
+				#some SLD documents don't have 'label' attribute so the problem is handled by this way.
+				try:
+					for m in sldItemList:
+						sldColorValues.append([m.attributes['quantity'].value, m.attributes['label'].value, m.attributes['color'].value])
+				except:
+					for m in sldItemList:
+						sldColorValues.append([m.attributes['quantity'].value, m.attributes['quantity'].value, m.attributes['color'].value])
+				
+				for s in range(len(sldColorValues)):
+					item = SubElement(colorRampShader, 'item')
+					item.attrib['alpha'] = '255'
+					item.attrib['value'] = sldColorValues[s][0]
+					item.attrib['label'] = sldColorValues[s][1]
+					item.attrib['color'] = sldColorValues[s][2]
 
 		
-		#some SLD documents don't have 'sld:Opacity' tag so the problem is handled by this way.
-		try:
-			sldOpacity = sldDocument.getElementsByTagName('sld:Opacity')[0].firstChild.nodeValue
-		except:
-			sldOpacity = '1'
+			#some SLD documents don't have 'sld:Opacity' tag so the problem is handled by this way.
+			try:
+				sldOpacity = sldDocument.getElementsByTagName('sld:Opacity')[0].firstChild.nodeValue
+			except:
+				sldOpacity = '1'
 			
-		rasterRenderer.attrib['opacity'] = sldOpacity
+			rasterRenderer.attrib['opacity'] = sldOpacity
 		
-		brightnessContrast = SubElement(pipe, 'brightnesscontrast')
-		hueSaturation = SubElement(pipe, 'huesaturation')
-		rasterResampler = SubElement(pipe, 'rasterresampler')
-		blendMode = SubElement(qmlRoot,'blendMode')
-		blendMode.text = '0'
-		textQML = minidom.parseString(tostring(qmlRoot)).toprettyxml(indent = "    ")
-		self.saveFile(textQML, 'QML')
+			brightnessContrast = SubElement(pipe, 'brightnesscontrast')
+			hueSaturation = SubElement(pipe, 'huesaturation')
+			rasterResampler = SubElement(pipe, 'rasterresampler')
+			blendMode = SubElement(qmlRoot,'blendMode')
+			blendMode.text = '0'
+			textQML = minidom.parseString(tostring(qmlRoot)).toprettyxml(indent = "    ")
+			self.saveFile(textQML, 'QML')
+			
+		except Exception as sldTransformError:
+			QMessageBox.critical(None, "Information", ("An error has occured: " + str(sldTransformError)))
 
 
 		
