@@ -1,8 +1,8 @@
-SLD4raster
+SLD4raster v0.7
 ==========
 
 
-(C) 2014 by M. Selim Bilgin
+(C) 2014 by Mehmet Selim BILGIN
 
 mselimbilgin [at] yahoo.com
 
