@@ -2,7 +2,9 @@
 
 # Resource object code
 #
-#        copyright            : (C) 2014 by M. Selim Bilgin
+# QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
+#		 version			  : 0.8
+#        copyright            : (C) 2014 by Mehmet Selim BILGIN
 #        email                : mselimbilgin@yahoo.com
 #		 web				  : http://cbsuygulama.wordpress.com
 # 		 Created: Pzt 10. Şub 21:12:52 2014

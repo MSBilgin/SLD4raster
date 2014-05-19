@@ -11,9 +11,9 @@
 [general]
 name=SLD4raster
 qgisMinimumVersion=2.0
-description=QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. It supports multiband style (with different band order), singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation and opacity levels.
-version=0.7
-author=M. Selim Bilgin
+description=QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
+version=0.8
+author=Mehmet Selim BILGIN
 email=mselimbilgin@yahoo.com
 
 # end of mandatory metadata

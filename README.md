@@ -1,8 +1,8 @@
-SLD4raster
+SLD4raster v0.8
 ==========
 
 
-(C) 2014 by M. Selim Bilgin
+(C) 2014 by Mehmet Selim BILGIN
 
 mselimbilgin [at] yahoo.com
 
@@ -11,7 +11,7 @@ http://cbsuygulama.wordpress.com
 
 
 ###Description
-SLD4raster is a QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. It supports multiband, singleband pseudocolor, gradient styles. By using it you can share your raster map styles in QGIS with other GIS softwares that support OGC SLD standarts. For example Udig, GeoServer, MapServer…
+QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels. By using it you can share your raster map styles in QGIS with other GIS softwares that support OGC SLD standarts. For example Udig, GeoServer, MapServer…
 
 
 
@@ -24,10 +24,12 @@ SLD4raster is a QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for rast
    - Gradient color (white to black, black to white) styles. Also you can adjust min-max values.
 
    - Supports layer opacity.
+  
+   - SLD to QGIS Style File (*.qgs) transformation.
    
 
 <p align="center">
-  <img src="https://lh6.googleusercontent.com/-eeINOQDV-ac/UvlIMctOGYI/AAAAAAAAARQ/7jWAAp4jtWA/w577-h540-no/image001.png"/>
+  <img src="https://lh6.googleusercontent.com/-hcoomgF7lws/U3pu-U-ZwoI/AAAAAAAAAbs/gbXwOddcHeM/w517-h553-no/SLD4raster_v0.8.png"/>
 </p>
 
 

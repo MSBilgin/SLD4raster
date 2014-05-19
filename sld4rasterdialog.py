@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- sld4rasterDialog
+ sld4raster 
                                  A QGIS plugin
- QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. It supports multiband style (with different band order), singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation and opacity levels.
+ QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. 
+ Also it can transform SLD documents to QGIS Layer Style File (*.qgs).
+ It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
                              -------------------
         begin                : 2014-02-06
-        copyright            : (C) 2014 by M. Selim Bilgin
+		version				 : 0.8
+        copyright            : (C) 2014 by Mehmet Selim BILGIN
         email                : mselimbilgin@yahoo.com
+		web					 : http://cbsuygulama.wordpress.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -30,3 +34,4 @@ class sld4rasterDialog(QtGui.QDialog, Ui_sld4raster):
         def __init__(self):
                 QtGui.QMainWindow.__init__(self)
                 self.setupUi(self) 
+				
