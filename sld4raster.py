@@ -63,7 +63,7 @@ class sld4raster:
 			saveMessage = "The SLD document has been succesfully saved."
 		else:
 			saveDlg = QFileDialog.getSaveFileName(self.dlg, "Save SLD File...",".", "QGIS Layer Style File (*.qml)")
-			saveMessage = 'SLD document has been succesfully translated to QML style file.'
+			saveMessage = 'SLD document has been succesfully transformed to QML style file.'
 			
 		if saveDlg:
 			try:
