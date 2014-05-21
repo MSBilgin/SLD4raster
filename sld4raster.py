@@ -163,7 +163,7 @@ class sld4raster:
 					item.attrib['color'] = sldColorValues[s][2]
 
 		
-			#some SLD documents don't have 'sld:Opacity' tag so the problem is handled by this way.
+			#some SLD documents don't have 'Opacity' tag so the problem is handled by this way.
 			try:
 				sldOpacity = sldDocument.getElementsByTagName(nameSpace + 'Opacity')[0].firstChild.nodeValue
 			except:
