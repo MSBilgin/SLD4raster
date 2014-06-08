@@ -35,6 +35,6 @@ QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also 
 
 ###Installation
 
-1. Donwload the project and unzip it. 
+1. Donwload the project and unzip it.
 2. Change the plugin folder name to SLD4raster. 
 3. Copy this folder to .qgis2\python\plugins\  
