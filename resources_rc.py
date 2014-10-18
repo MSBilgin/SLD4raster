@@ -2,12 +2,11 @@
 
 # Resource object code
 #
-# QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
-#		 version			  : 0.8
+# QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels. Integrated with GeoServer Rest API. Provides direct upload of the styles.
+#		 version			  : 0.9
 #        copyright            : (C) 2014 by Mehmet Selim BILGIN
 #        email                : mselimbilgin@yahoo.com
-#		 web				  : http://cbsuygulama.wordpress.com
-# 		 Created: Pzt 10. Şub 21:12:52 2014
+#		 web				  : http://cbsuygulama.wordpress.com 		 
 #        by: The Resource Compiler for PyQt (Qt v4.8.5)
 #
 # WARNING! All changes made in this file will be lost!

@@ -4,11 +4,12 @@
  sld4raster 
                                  A QGIS plugin
  QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. 
- Also it can transform SLD documents to QGIS Layer Style File (*.qgs).
- It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
+ It can transform SLD documents to QGIS Layer Style File (*.qgs).
+ Supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
+ Integrated with GeoServer Rest API. Provides direct upload of the styles.
                              -------------------
-        begin                : 2014-02-06
-		version				 : 0.8
+        begin                : 2014-10-09
+		version				 : 0.9
         copyright            : (C) 2014 by Mehmet Selim BILGIN
         email                : mselimbilgin@yahoo.com
 		web					 : http://cbsuygulama.wordpress.com
@@ -24,14 +25,22 @@
  ***************************************************************************/
 """
 
-from PyQt4 import QtCore, QtGui
-from ui_sld4raster import Ui_sld4raster
-from qgis.core import *
-# create the dialog for zoom to point
+from PyQt4 import QtCore, QtGui, uic
+import os
 
+MainFormClass, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'ui_sld4raster.ui'))
 
-class sld4rasterDialog(QtGui.QDialog, Ui_sld4raster):
-        def __init__(self):
-                QtGui.QMainWindow.__init__(self)
-                self.setupUi(self) 
+UploadFormClass, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'ui_gsUpload.ui'))
+
+class sld4rasterDialog(QtGui.QDialog, MainFormClass):
+		def __init__(self):
+			QtGui.QDialog.__init__(self)
+			self.setupUi(self)
+				
+class gsUploadDialog(QtGui.QDialog, UploadFormClass):
+		def __init__(self):
+			QtGui.QDialog.__init__(self)
+			self.setupUi(self)
 				

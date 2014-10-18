@@ -1,4 +1,4 @@
-SLD4raster v0.8
+SLD4raster v0.9
 ==========
 
 
@@ -11,7 +11,7 @@ http://cbsuygulama.wordpress.com
 
 
 ###Description
-QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels. By using it you can share your raster map styles in QGIS with other GIS softwares that support OGC SLD standarts. For example Udig, GeoServer, MapServer…
+QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also it can transform SLD documents to QGIS Layer Style File (*.qgs). It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels. Integrated with GeoServer Rest API. Provides direct upload of the styles. By using it you can share your raster map styles in QGIS with other GIS softwares that support OGC SLD standarts. For example Udig, GeoServer, MapServer…
 
 
 
@@ -27,14 +27,18 @@ QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. Also 
   
    - SLD to QGIS Style File (*.qgs) transformation.
    
+   - Integrated with GeoServer Rest API.
+   
+   
 
 <p align="center">
-  <img src="https://lh6.googleusercontent.com/-hcoomgF7lws/U3pu-U-ZwoI/AAAAAAAAAbs/gbXwOddcHeM/w517-h553-no/SLD4raster_v0.8.png"/>
+  <img src="https://lh4.googleusercontent.com/-X9GYJoQrRqA/VELMPpwAjaI/AAAAAAAAAsQ/I39zTCnwSeM/w524-h553-no/3.png"/>
+  <img src="https://lh4.googleusercontent.com/-Ila6E_AZIV8/VELMPp_e_fI/AAAAAAAAAsU/mGNpAQfhy14/w522-h553-no/2.png"/>
 </p>
 
 
 ###Installation
 
-1. Download the project and unzip it.
+1. Donwload the project and unzip it. 
 2. Change the plugin folder name to SLD4raster. 
 3. Copy this folder to .qgis2\python\plugins\  

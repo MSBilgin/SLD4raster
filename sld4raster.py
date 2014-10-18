@@ -4,11 +4,12 @@
  sld4raster 
                                  A QGIS plugin
  QGIS 2 plugin to generate SLD (Styled Layer Descriptor) for raster layers. 
- Also it can transform SLD documents to QGIS Layer Style File (*.qgs).
- It supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
+ It can transform SLD documents to QGIS Layer Style File (*.qgs).
+ Supports multiband, singleband pseudocolor, gradient (white to black, black to white) styles also color interpolation type and opacity levels.
+ Integrated with GeoServer Rest API. Provides direct upload of the styles.
                              -------------------
-        begin                : 2014-02-06
-		version				 : 0.8
+        begin                : 2014-10-09
+		version				 : 0.9
         copyright            : (C) 2014 by Mehmet Selim BILGIN
         email                : mselimbilgin@yahoo.com
 		web					 : http://cbsuygulama.wordpress.com
@@ -27,14 +28,18 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
+from PyQt4.QtXml import QDomDocument
+from PyQt4.Qsci import QsciScintilla, QsciLexerXML
 
 import resources_rc
-from sld4rasterdialog import sld4rasterDialog
+from dialogs import sld4rasterDialog, gsUploadDialog
 
-from PyQt4.QtXml import QDomDocument
 from xml.etree.ElementTree import Element, SubElement, tostring
 from xml.dom import minidom
 import codecs
+import urllib2
+import os
+
 
 class sld4raster:
 	def __init__(self, iface):
@@ -58,28 +63,35 @@ class sld4raster:
 		self.iface.removeToolBarIcon(self.action)
 		
 	def saveFile(self, document, type):
-		if type=='SLD':
-			saveDlg = QFileDialog.getSaveFileName(self.dlg, "Save SLD File...",".", "SLD file (*.sld);; XML file (*.xml)")
-			saveMessage = "The SLD document has been succesfully saved."
-		else:
-			saveDlg = QFileDialog.getSaveFileName(self.dlg, "Save SLD File...",".", "QGIS Layer Style File (*.qml)")
-			saveMessage = 'SLD document has been succesfully transformed to QML style file.'
-			
-		if saveDlg:
-			try:
-				with open(saveDlg, 'w') as File:
-					File.write(document.encode('utf-8'))#UTF encoding for non-ASCII chars.
-				QMessageBox.information(None, "Information", saveMessage)
-			except Exception as saveError:
-				QMessageBox.critical(None, "Information", ("An error has occured: " + str(saveError)))
+		#Saving sld or qml documents to files.
+		try:
+			#Firstly checking xml syntax.
+			minidom.parseString(document.encode("utf-8")) #UTF encoding for non-ASCII chars.
+			if type=='SLD':
+				saveDlg = QFileDialog.getSaveFileName(self.dlg, 'Save SLD File...','.', 'SLD file (*.sld);; XML file (*.xml);; All files (*.*)')
+				saveMessage = 'The SLD file has been succesfully saved.'
+			else:
+				saveDlg = QFileDialog.getSaveFileName(self.dlg, 'Save QML File...','.', 'QGIS Layer Style File (*.qml)')
+				saveMessage = 'The QML file has been succesfully saved.'
+				
+			if saveDlg:
+				try:
+					with open(saveDlg, 'w') as File:
+						File.write(document.encode('utf-8'))#UTF encoding for non-ASCII chars.
+					QMessageBox.information(None, "Information", saveMessage)
+				except Exception as saveError:
+					QMessageBox.critical(None, "Information", ("An error has occured: " + str(saveError)))
+					
+		except Exception as error:
+			QMessageBox.critical(None, "Invalid XML", str(error))			
 		
 	def browseFile(self):
-		browseDlg = QFileDialog.getOpenFileName(self.dlg, "Choose SLD File...",".", "SLD file (*.sld);; XML file (*.xml)")
+		browseDlg = QFileDialog.getOpenFileName(self.dlg, "Choose SLD File...",".", "SLD file (*.sld);; XML file (*.xml);; All files (*.*)")
 		if browseDlg:
 			self.dlg.lineEdit.setText(browseDlg)
 			try:
 				with codecs.open(browseDlg, encoding='utf-8', mode='r') as readFile:
-					self.dlg.textEdit_2.setText(readFile.read())
+					self.dlg.sldText2.setText(readFile.read())
 			except Exception as readError:	
 				QMessageBox.critical(None, "Information", ("An error has occured: " + str(readError)))
 			
@@ -88,12 +100,11 @@ class sld4raster:
 			minidom.parseString(inputXML.encode("utf-8")) #UTF encoding for non-ASCII chars.
 			QMessageBox.information(None, "Information", "The XML document is well-formed.")
 		except Exception as SLDerror:
-			QMessageBox.critical(None, "Information", ("Invalid XML document: " + str(SLDerror)))
-		
+			QMessageBox.critical(None, "Invalid XML", str(SLDerror))		
 			
 	def sldTransform(self):		
 		try:
-			sldDocument = minidom.parseString(self.dlg.textEdit_2.toPlainText().encode('utf-8'))
+			sldDocument = minidom.parseString(self.dlg.sldText2.text().encode('utf-8'))
 			
 			#Namespaces (sld, se, none) are most important part. Firstly they must be handled.
 			if len(sldDocument.getElementsByTagName('sld:RasterSymbolizer')) > 0:
@@ -103,8 +114,7 @@ class sld4raster:
 				nameSpace = 'se:'
 				
 			else:
-				nameSpace = '' #no namespace.
-			
+				nameSpace = '' #no namespace.			
 			
 			#main QML structure.
 			qmlRoot = Element('qgis')
@@ -161,7 +171,6 @@ class sld4raster:
 					item.attrib['value'] = sldColorValues[s][0]
 					item.attrib['label'] = sldColorValues[s][1]
 					item.attrib['color'] = sldColorValues[s][2]
-
 		
 			#some SLD documents don't have 'Opacity' tag so the problem is handled by this way.
 			try:
@@ -180,15 +189,10 @@ class sld4raster:
 			self.saveFile(textQML, 'QML')
 			
 		except Exception as sldTransformError:
-			QMessageBox.critical(None, "Information", ("An error has occured: " + str(sldTransformError)))
+			QMessageBox.critical(None, "Invalid XML", str(sldTransformError))
 			
-		
-
-
-		
 	def noRasterLayer(self):
 		QMessageBox.critical(None, "Information", "There is no raster layer in QGIS canvas.")
-
 	
 	def sldMake(self):
 		for (i,j) in self.allMapLayers:
@@ -299,16 +303,139 @@ class sld4raster:
 		rasterOpacity = str(qmlString.getElementsByTagName('rasterrenderer')[0].attributes['opacity'].value)
 		opacity.text = rasterOpacity
 		textSLD = minidom.parseString(tostring(sldRoot))
-		self.dlg.textEdit.setText(textSLD.toprettyxml(indent = "    "))
+		self.dlg.sldText1.setText(textSLD.toprettyxml(indent = "    "))
+		
+	def uiSettings(self):
+		self.dlg.sldText1.setMarginLineNumbers(1, True)
+		self.dlg.sldText1.setMarginsBackgroundColor(QColor("#98AFC7"))
+		self.dlg.sldText1.setMarginWidth(1,30)
+		self.dlg.sldText1.setUtf8(True) #Enabling non-Ascii chars
+		self.dlg.sldText1.setLexer(QsciLexerXML())
+		
+		self.dlg.sldText2.setMarginLineNumbers(1, True)
+		self.dlg.sldText2.setMarginsBackgroundColor(QColor("#98AFC7"))
+		self.dlg.sldText2.setMarginWidth(1,30)
+		self.dlg.sldText2.setUtf8(True) #Enabling non-Ascii chars
+		self.dlg.sldText2.setLexer(QsciLexerXML())
+		
+		self.dlg.setFixedSize(600, 615)
+						
+	def rememberMe(self):
+		#Remember me option operation.
+		try:
+			if self.upDlg.checkBox.isChecked():
+				flatData = self.upDlg.urlText.text() + ';' + self.upDlg.userText.text() + ';' + self.upDlg.passText.text()
+				with open(os.path.join(os.path.dirname(__file__), 'int.dat'), 'w') as file:
+					file.write(flatData.encode('base64'))
+			
+			else:
+				os.remove(os.path.join(os.path.dirname(__file__), 'int.dat'))
+		except Exception as error:
+			QMessageBox.critical(None, "Information", str(error))
+	
+	def checkLogs(self):
+		#Saved login data is handled in here.
+		iRememberYou = os.path.isfile(os.path.join(os.path.dirname(__file__), 'int.dat'))
+		if iRememberYou:
+			
+			with open(os.path.join(os.path.dirname(__file__), 'int.dat'), 'r') as file:
+				logInData = file.read().decode('base64')
+				
+			try:
+				self.upDlg.urlText.setText(logInData.split(';')[0])
+				self.upDlg.userText.setText(logInData.split(';')[1])
+				self.upDlg.passText.setText(logInData.split(';')[2])
+			except:
+				pass
+				
+			self.upDlg.checkBox.setChecked(True)
+			
+		else:
+			self.upDlg.urlText.setText('http://localhost:8080/geoserver/rest')
+			self.upDlg.userText.setText('admin')
+			self.upDlg.passText.setText('geoserver')	
+
+	def showUploadDialog(self):
+		try:
+			minidom.parseString(self.dlg.sldText1.text().encode('utf-8'))
+			
+			self.upDlg.sldText.setText(self.dlg.comboBox.currentText())
+			self.upDlg.sldText.setFocus()
+			self.checkLogs()
+			self.upDlg.exec_()			
+		except Exception as error:
+			QMessageBox.critical(None, "Invalid XML", str(error))
+		
+	def upload(self):
+		###Everything about uploding data to GeoServer is handling in here.
+		status = 1 #I use it for managing operations. If status = 0 nothing to do.
+		if not self.upDlg.urlText.text() or not self.upDlg.userText.text() or not self.upDlg.passText.text() or not self.upDlg.sldText.text():
+			QMessageBox.critical(None, 'Information', 'Please fill in all fields.')
+			
+		else:
+			username = self.upDlg.userText.text()
+			password = self.upDlg.passText.text()
+			sldName = self.upDlg.sldText.text()			
+			basicLogin = 'Basic ' + (username + ':' + password).encode('base64').rstrip() #Base64 auth for REST service.
+			
+			#Deleting the SLD if exists on GeoServer.			
+			if self.upDlg.urlText.text() [-1] == '/':
+				usableUrl = self.upDlg.urlText.text()[:len(self.upDlg.urlText.text())-1] #Maybe user add slash '/' in the end of url, so this problem is solved in this way.
+			else:																		 #I didnt use urlparse lib. Because this solution is simplier than it. 
+				usableUrl = self.upDlg.urlText.text()
+				
+			url = usableUrl + '/styles/' + sldName +'?recurse=true'
+			request = urllib2.Request(url)
+			request.add_header("Authorization", basicLogin)
+			request.get_method = lambda: 'DELETE'
+			try:
+				urllib2.urlopen(request)
+			except Exception as deleteError:
+				pass
+				
+			#Generating new SLD on GeoServer.
+			url = usableUrl + '/styles'
+			request = urllib2.Request(url)
+			request.add_header("Authorization", basicLogin)
+			request.add_header("Content-type", "text/xml")
+			request.add_header("Accept", "*/*")
+			request.add_data('<style><name>' + sldName + '</name><filename>' + (sldName + '.sld') + '</filename></style>') #
+			try:
+				urllib2.urlopen(request)
+			except Exception as generateError:
+				QMessageBox.critical(None, 'Information', str(generateError))
+				status = 0
+				
+			#Uploading SLD to GeoServer.
+			if status == 1:
+				url = usableUrl + '/styles/' + sldName
+				request = urllib2.Request(url)
+				request.add_header("Authorization", basicLogin)
+				request.add_header("Content-type", "application/vnd.ogc.sld+xml")
+				request.add_header("Accept", "*/*")
+				request.add_data(self.dlg.sldText1.text())
+				request.get_method = lambda: 'PUT'
+				try:
+					urllib2.urlopen(request)
+				except Exception as generateError:
+					QMessageBox.critical(None, 'Information', str(generateError))
+					status = 0
+					
+			if status == 1:
+				QMessageBox.information(None, 'Information', 'The style was succesfully uploaded.')	
 
 	def run(self):
 		self.dlg = sld4rasterDialog()
+		self.upDlg = gsUploadDialog()
+		
+		self.uiSettings() #UI elements' initial configurations.
+		
 		self.dlg.generateBtn.clicked.connect(self.sldMake)
 		self.dlg.translateBtn.clicked.connect(self.sldTransform)
-		self.dlg.saveBtn.clicked.connect(lambda: self.saveFile(self.dlg.textEdit.toPlainText(), 'SLD'))
+		self.dlg.saveBtn.clicked.connect(lambda: self.saveFile(self.dlg.sldText1.text(), 'SLD'))
 		self.dlg.browseBtn.clicked.connect(self.browseFile)
-		self.dlg.validateBtn.clicked.connect(lambda: self.validation(self.dlg.textEdit.toPlainText()))
-		self.dlg.validateBtn_2.clicked.connect(lambda: self.validation(self.dlg.textEdit_2.toPlainText()))
+		self.dlg.validateBtn.clicked.connect(lambda: self.validation(self.dlg.sldText1.text()))
+		self.dlg.validateBtn_2.clicked.connect(lambda: self.validation(self.dlg.sldText2.text()))
 		self.allMapLayers = QgsMapLayerRegistry.instance().mapLayers().items()
 
 		for (notImportantForNow, layerObj) in self.allMapLayers:
@@ -318,5 +445,9 @@ class sld4raster:
 		if self.dlg.comboBox.count() == 0:
 			self.dlg.generateBtn.clicked.disconnect(self.sldMake)
 			self.dlg.generateBtn.clicked.connect(self.noRasterLayer)
+						
+		self.dlg.UpDlgBtn.clicked.connect(self.showUploadDialog)
+		self.upDlg.uploadBtn.clicked.connect(self.upload)
+		self.upDlg.checkBox.stateChanged.connect(self.rememberMe)
 
 		self.dlg.exec_()#By using exec_() function the plugin window will be top most and QGIS window deactivated.
