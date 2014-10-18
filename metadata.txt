@@ -21,7 +21,14 @@ email=mselimbilgin@yahoo.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=#Integrated with GeoServer Rest API.
+changelog=	0.8
+			-SLD to QGIS Style File (*.qgs) transformation
+			-XML validation.
+			-New user interface.
+			
+			0.9
+			-Integrated with GeoServer Rest API.
+			-Improved style edit window.
 
 
 # tags are comma separated with spaces allowed
