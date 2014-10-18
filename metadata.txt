@@ -21,7 +21,9 @@ email=mselimbilgin@yahoo.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=#Integrated with GeoServer Rest API.
+changelog=
+		-Integrated with GeoServer Rest API.
+		-Improved code editor window.
 
 
 # tags are comma separated with spaces allowed
