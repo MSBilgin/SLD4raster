@@ -80,7 +80,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>GeoServer Rest URL</string>
+    <string>GeoServer REST URL</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
